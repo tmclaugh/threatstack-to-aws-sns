@@ -1,0 +1,9 @@
+#!/bin/sh -xe
+
+# Let's us see app log and errors.
+exec 2>&1
+
+cd {{pkg.svc_var_path}}
+
+source venv/bin/activate
+gunicorn -c gunicorn.conf.py --bind 0.0.0.0:8080 threatstack-to-aws-sns

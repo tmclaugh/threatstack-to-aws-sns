@@ -1,0 +1,3 @@
+# Fixes issue with ancient openssl on OS X and Threat Stack API not
+# supporting less than TLS 1.2
+pyOpenSSL

@@ -1,0 +1,5 @@
+*.pyc
+
+# Habitat, location depends on where you're rooted.
+results/*
+build/results/*

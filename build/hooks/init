@@ -1,0 +1,12 @@
+#!/bin/sh -xe
+
+# This let's us see errors.
+exec 2>&1
+
+ln -fs {{pkg.path}}/app {{pkg.svc_var_path}}
+ln -fs {{pkg.path}}/venv {{pkg.svc_var_path}}
+ln -fs {{pkg.path}}/gunicorn.conf.py {{pkg.svc_var_path}}
+ln -fs {{pkg.path}}/config.py {{pkg.svc_var_path}}
+ln -fs {{pkg.path}}/logging.conf {{pkg.svc_var_path}}
+ln -fs {{pkg.path}}/threatstack-to-aws-sns.py {{pkg.svc_var_path}}
+
