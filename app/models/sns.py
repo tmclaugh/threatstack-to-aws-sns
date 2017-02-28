@@ -66,7 +66,7 @@ class SNSModel:
                 six.reraise(SNSClientError, SNSClientError(e), exc_info[2])
 
         # We should throw an error if there's an issue.
-        return True
+        return topic_attributes
 
     def publish_webhook(self, webhook):
         '''Publish webhook to SNS topic.'''

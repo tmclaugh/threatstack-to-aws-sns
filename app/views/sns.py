@@ -59,11 +59,11 @@ def publish_message():
             raise SNSViewWebhookDataError(msg)
 
     sns_client = sns_model.SNSModel()
-    sns_client.publish_webhook(webhook_data)
+    sns_resp = sns_client.publish_webhook(webhook_data)
 
     status_code = 200
     success = True
-    response = {'success': success}
+    response = {'success': success, 'sns': sns_resp}
 
     return jsonify(response), status_code
 
