@@ -58,10 +58,8 @@ def publish_message():
             msg = "alert lacks 'created_at' field: {}".format(webhook_data)
             raise SNSViewWebhookDataError(msg)
 
-    # Process alerts in webhook
-    for alert in webhook_data.get('alerts'):
-        sns_client = sns_model.SNSModel()
-        sns_client.publish_webhook_alert(alert)
+    sns_client = sns_model.SNSModel()
+    sns_client.publish_webhook(webhook_data)
 
     status_code = 200
     success = True

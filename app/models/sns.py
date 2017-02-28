@@ -3,6 +3,7 @@ from app.errors import AppBaseError
 import boto3
 from botocore.exceptions import ClientError
 import config
+import json
 import logging
 import six
 import sys
@@ -67,9 +68,21 @@ class SNSModel:
         # We should throw an error if there's an issue.
         return True
 
-    def publish_webhook_alert(self, webhook):
+    def publish_webhook(self, webhook):
         '''Publish webhook to SNS topic.'''
-        pass
+        try:
+            sns_resp = self.sns_client.publish(TopicArn=self.sns_topic_arn,
+                                               Message=json.dumps(webhook))
+            _logger.debug('sns_resp: %s' % sns_resp)
+        except ClientError as e:
+            exc_info = sys.exc_info()
+            if sys.version_info >= (3,0,0):
+                raise SNSClientError(e).with_traceback(exc_info[2])
+            else:
+                six.reraise(SNSClientError, SNSClientError(e), exc_info[2])
 
-        return None
+        if sns_resp['ResponseMetadata']['HTTPStatusCode'] != 200:
+            raise SNSClientError('SNS failure: %s' % sns_resp)
+
+        return sns_resp
 
