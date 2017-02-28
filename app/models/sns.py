@@ -71,6 +71,8 @@ class SNSModel:
     def publish_webhook(self, webhook):
         '''Publish webhook to SNS topic.'''
         try:
+            # We don't do retry failure handling because because the topic
+            # should handle that for us.
             sns_resp = self.sns_client.publish(TopicArn=self.sns_topic_arn,
                                                Message=json.dumps(webhook))
             _logger.debug('sns_resp: %s' % sns_resp)
