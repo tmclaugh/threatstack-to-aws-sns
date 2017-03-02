@@ -5,7 +5,9 @@ import logging
 from logging.config import fileConfig
 import os
 
-fileConfig('logging.conf', disable_existing_loggers=False)
+dirname = os.path.dirname(__file__)
+logging_conf = os.path.join(dirname, 'logging.conf')
+fileConfig(logging_conf, disable_existing_loggers=False)
 if os.environ.get('TS_DEBUG'):
     logging.root.setLevel(level=logging.DEBUG)
 _logger = logging.getLogger(__name__)
