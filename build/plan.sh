@@ -32,6 +32,7 @@ do_unpack() {
     mkdir -p $pkg_prefix
     build_line "Copying project data to $pkg_prefix/"
     cp -r $PROJECT_ROOT/app $pkg_prefix/
+    cp -r $PROJECT_ROOT/*.conf $pkg_prefix/
     cp -r $PROJECT_ROOT/*.py $pkg_prefix/
     cp -r $PROJECT_ROOT/requirements.txt $pkg_prefix/
 }
