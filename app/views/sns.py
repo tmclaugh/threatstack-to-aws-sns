@@ -20,6 +20,8 @@ class SNSViewWebhookDataError(SNSViewBaseError):
 @sns.route('/status', methods=['GET'])
 def is_available():
     '''Test that AWS SNS is available.'''
+    _logger.info('{}: {}'.format(request.method, request.path))
+
 
     sns_client = sns_model.SNSModel()
     sns_status = sns_client.is_available()
@@ -36,6 +38,9 @@ def is_available():
 @sns.route('/message', methods=['POST'])
 def publish_message():
     '''Relay a webhook to AWS SNS.'''
+    _logger.info('{}: {} - {}'.format(request.method,
+                                      request.path,
+                                      request.data))
 
     webhook_data = request.get_json()
 
