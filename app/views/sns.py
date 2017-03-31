@@ -64,11 +64,18 @@ def publish_message():
             raise SNSViewWebhookDataError(msg)
 
     sns_client = sns_model.SNSModel()
-    sns_resp = sns_client.publish_webhook(webhook_data)
+    alerts = webhook_data.get('alerts')
+    # this is to help us with the fact that Threat Stack batches alerts in
+    # webhooks but when going through AWS API Gateway there's a 30s timeout.
+    sns_responses = []
+    for alert in alerts:
+        single_alert = {'alerts': [alert]}
+        resp = sns_client.publish_webhook(single_alert)
+        sns_responses.append(resp)
 
     status_code = 200
     success = True
-    response = {'success': success, 'sns': sns_resp}
+    response = {'success': success, 'sns': sns_responses}
 
     return jsonify(response), status_code
 
