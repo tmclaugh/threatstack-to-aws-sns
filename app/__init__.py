@@ -9,7 +9,7 @@ def _initialize_blueprints(application):
     '''Register Flask blueprints'''
 
     from app.views.sns import sns
-    application.register_blueprint(sns, url_prefix='/api/v1/sns')
+    application.register_blueprint(sns, url_prefix='/threatstack-to-aws-sns/api/v1/sns')
 
 def _initialize_errorhandlers(application):
     '''Initialize error handlers'''
