@@ -6,7 +6,7 @@ Takes a Threat Stack web hook request publishes it to an AWS SNS topic.
 ## Deployment
 This service can be deployed to AWS running on Lambda behind AWS API gateway by clicking "Launch Stack".
 [![Launch CloudFormation
-Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=ThreatStackServiceIntegrations&templateURL=https://s3.amazonaws.com/straycat-dhs-org-straycat-lamba-deploys/threatstack-to-aws-sns.json)
+Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=ThreatStackServiceIntegrations&templateURL=https://s3.amazonaws.com/ts-demo-lamba-deploys/threatstack-to-aws-sns.json)
 
 Once deployment is complete, get the value of the SnsWebHookEndpoint output from the CloudFormation stack.  That endpoint should be will be the Webhook URL value for the Threat Stack Webhook API integration.
 
