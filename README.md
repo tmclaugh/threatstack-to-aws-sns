@@ -3,7 +3,34 @@ Takes a Threat Stack web hook request publishes it to an AWS SNS topic.
 
 **NOTE: This code is provided as an example and without support for creating services that use Threat Stack webhooks to perform actions within an environment.**
 
-## Setup
+## Deployment
+This service can be deployed to AWS running on Lambda behind AWS API gateway by clicking "Launch Stack".
+[![Launch CloudFormation
+Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=ThreatStackServiceIntegrations&templateURL=https://s3.amazonaws.com/ts-demo-lamba-deploys/threatstack-to-aws-sns.json)
+
+Once deployment is complete, get the value of the SnsWebHookEndpoint output from the CloudFormation stack.  That endpoint should be will be the Webhook URL value for the Threat Stack Webhook API integration.
+
+## API
+### POST https://_host_/api/v1/sns/message
+Publish a JSON doc from Threat Stack to AWS SNS.  __NOTE__: A webhook may contain multiple alerts but this service will store each one individually.
+```
+{
+  "alerts": [
+    {
+      "id": "<alert ID>",
+      "title": "<alert title / description>",
+      "created_at": <time in milliseconds from epoch UTC>,
+      "severity": <severity value>,
+      "organization_id": "<alphanumeric organization ID>",
+      "server_or_region": "<name of host in Threat Stack platform>",
+      "source": "<source type>"
+    }
+  [
+}
+```
+
+## Standalone Setup / Build / Deployment
+### Setup
 Setup will need to be performed for both this service and in Threat Stack.
 
 Set the following environmental variables:
@@ -32,7 +59,7 @@ If performing debugging you may wish to run the app directly instead of via Guni
 python threatstack-to-aws-sns.py
 ```
 
-## Build
+### Build
 This service uses [Chef Habitat](http://www.habitat.sh) to build deployable packages.  Habitat supports the following package formats natively:
 * Habitat package (.hart)
 * tar
@@ -72,13 +99,22 @@ $ hab studio enter
 [3][default:/src/build:0]# hab pkg export tar tmclaugh/threatstack-to-aws-sns
 ```
 
-## Deploy
-### Permissions
+### Deploy
+#### Permissions
 The host running this service needs the following AWS IAM policy for SNS topic access where *sns_topic* is the name of the topic set by AWS_SNS_TOPIC:
 ```
 {
     "Version": "2012-10-17",
     "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "sns:ListTopics",
+            ],
+            "Resource": [
+                "arn:aws:sns:<aws_region>:<aws_account_id>:*"
+            ]
+        },
         {
             "Effect": "Allow",
             "Action": [
@@ -88,7 +124,7 @@ The host running this service needs the following AWS IAM policy for SNS topic a
             "Resource": [
                 "arn:aws:sns:<aws_region>:<aws_account_id>:<sns_topic>"
             ]
-        },
+        }
     ]
 }
 ```
@@ -105,24 +141,5 @@ $ sudo hab start tmclaugh-threatstack-to-aws-sns-{version}-x86_64-linux.hart
 ```
 $ sudo tar zxvf {package}.tar.gz -C /
 $ sudo /hab/bin/hab tmclaugh/threatstack-to-aws-sns
-```
-
-## API
-### POST https://_host_/api/v1/sns/message
-Publish a JSON doc from Threat Stack to AWS SNS.  __NOTE__: A webhook may contain multiple alerts but this service will store each one individually.
-```
-{
-  "alerts": [
-    {
-      "id": "<alert ID>",
-      "title": "<alert title / description>",
-      "created_at": <time in milliseconds from epoch UTC>,
-      "severity": <severity value>,
-      "organization_id": "<alphanumeric organization ID>",
-      "server_or_region": "<name of host in Threat Stack platform>",
-      "source": "<source type>"
-    }
-  [
-}
 ```
 

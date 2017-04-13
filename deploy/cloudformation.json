@@ -1,0 +1,728 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Threat Stack service integrations",
+  "Resources": {
+    "SnsTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "TopicName": {
+          "Ref": "ThreatStackServiceIntegrationsSnsTopicName"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "0317bf14-5346-46c7-b919-a5fd33590889"
+        }
+      }
+    },
+    "SnsTopicPolicy": {
+      "Type": "AWS::SNS::TopicPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2008-10-17",
+          "Id": "__default_policy_ID",
+          "Statement": [
+            {
+              "Sid": "__default_statement_ID",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Action": [
+                "SNS:GetTopicAttributes",
+                "SNS:SetTopicAttributes",
+                "SNS:AddPermission",
+                "SNS:RemovePermission",
+                "SNS:DeleteTopic",
+                "SNS:Subscribe",
+                "SNS:ListSubscriptionsByTopic",
+                "SNS:Publish",
+                "SNS:Receive"
+              ],
+              "Resource": {
+                "Fn::Sub": "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${ThreatStackServiceIntegrationsSnsTopicName}"
+              },
+              "Condition": {
+                "StringEquals": {
+                  "AWS:SourceOwner": {
+                    "Ref": "AWS::AccountId"
+                  }
+                }
+              }
+            },
+            {
+              "Sid": "AWSCloudTrailSNSPolicy20150319",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "cloudtrail.amazonaws.com"
+              },
+              "Action": "SNS:Publish",
+              "Resource": {
+                "Fn::Sub": "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${ThreatStackServiceIntegrationsSnsTopicName}"
+              }
+            }
+          ]
+        },
+        "Topics": [
+          {
+            "Ref": "SnsTopic"
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "918184b7-ef10-47ee-8bec-6ebb3e54c9a8"
+        }
+      },
+      "DependsOn": [
+        "SnsTopic"
+      ]
+    },
+    "SnsConfirmIamManagedPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "Confirm SNS topic subscription",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "SnsConfirmation",
+              "Effect": "Allow",
+              "Action": [
+                "sns:ConfirmSubscription"
+              ],
+              "Resource": [
+                {
+                  "Ref": "SnsTopic"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "ab8bf682-8990-4e79-b51d-d86e4cd8c710"
+        }
+      }
+    },
+    "Deployment": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "RestApi"
+        },
+        "Description": {
+          "Fn::Join": [
+            " ",
+            [
+              {
+                "Ref": "DeploymentStage"
+              },
+              "stage"
+            ]
+          ]
+        },
+        "StageName": {
+          "Ref": "DeploymentStage"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "701f3b5c-a6c2-49fa-b527-78be7ae4e50d"
+        }
+      },
+      "DependsOn": [
+        "ProxyAnyMethod"
+      ]
+    },
+    "RootResource": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "576f2766-0467-48b4-99be-b3bbfbb7e177"
+        }
+      },
+      "Properties": {
+        "RestApiId": {
+          "Ref": "RestApi"
+        },
+        "ParentId": {
+          "Fn::GetAtt": [
+            "RestApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": {
+          "Ref": "AppName"
+        }
+      }
+    },
+    "ProxyResource": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "RestApi"
+        },
+        "ParentId": {
+          "Ref": "RootResource"
+        },
+        "PathPart": "{proxy+}"
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "8d24687a-d967-4592-8119-129aa60439f7"
+        }
+      }
+    },
+    "ProxyAnyMethod": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "RestApi"
+        },
+        "ResourceId": {
+          "Ref": "ProxyResource"
+        },
+        "HttpMethod": "ANY",
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "Type": "AWS_PROXY",
+          "IntegrationHttpMethod": "POST",
+          "Uri": {
+            "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunction.Arn}/invocations"
+          },
+          "CacheKeyParameters": [
+            "method.request.path.proxy"
+          ],
+          "IntegrationResponses": [
+            {
+              "ResponseTemplates": {
+                "application/json": ""
+              },
+              "StatusCode": "200"
+            }
+          ]
+        },
+        "RequestParameters": {
+          "method.request.path.proxy": true
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "d84bf100-4b1d-4ce6-9d53-62e6ba2fbbbf"
+        }
+      },
+      "DependsOn": [
+        "LambdaFunction"
+      ]
+    },
+    "LambdaIamRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": {
+          "Fn::Sub": "ThreatStackServiceLambda-${AppName}"
+        },
+        "Path": "/service-role/",
+        "ManagedPolicyArns": [
+          {
+            "Ref": "SnsConfirmIamManagedPolicy"
+          }
+        ],
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "d2334711-6f09-4e7d-b6bd-1c1820e89ff4"
+        }
+      }
+    },
+    "LambdaIamPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "LambdaExecutionPolicy",
+        "Roles": [
+          {
+            "Ref": "LambdaIamRole"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "logs:CreateLogGroup",
+              "Resource": {
+                "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+              }
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "sns:ListTopics"
+              ],
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:*"
+                }
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "sns:GetTopicAttributes",
+                "sns:Publish"
+              ],
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${ThreatStackServiceIntegrationsSnsTopicName}"
+                }
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${AppName}:*"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "683b3f20-3945-46dc-8e96-af3ad3a2bb13"
+        }
+      }
+    },
+    "LambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AppS3Bucket"
+          },
+          "S3Key": {
+            "Ref": "AppS3Key"
+          }
+        },
+        "Description": "Threat Stack to AWS SNS",
+        "Environment": {
+          "Variables": {
+            "TS_AWS_SNS_TOPIC": {
+              "Fn::GetAtt": [
+                "SnsTopic",
+                "TopicName"
+              ]
+            }
+          }
+        },
+        "FunctionName": {
+          "Ref": "AppName"
+        },
+        "Handler": {
+          "Ref": "LambdaHandler"
+        },
+        "MemorySize": {
+          "Ref": "LambdaMemorySize"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaIamRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "python2.7",
+        "Timeout": {
+          "Ref": "LambdaTimeout"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "293804a3-70b0-40fa-8d83-299e6432a7bc"
+        }
+      }
+    },
+    "LambdaPermission": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "LambdaFunction"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com"
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "32857435-a44d-4602-a6ca-5f18a0b547bd"
+        }
+      },
+      "Condition": ""
+    },
+    "RestApi": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": {
+          "Ref": "ThreatStackRestApiName"
+        },
+        "Description": "Threat Stack service integrations"
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "4368da5f-f23e-4f12-a349-5d3df71c7b6d"
+        }
+      }
+    }
+  },
+  "Parameters": {
+    "AppName": {
+      "Type": "String",
+      "Description": "Name of API.",
+      "Default": "threatstack-to-aws-sns"
+    },
+    "AppEndPoint": {
+      "Type": "String",
+      "Description": "Path to Api endpoint",
+      "Default": "/api/v1/sns/message"
+    },
+    "AppS3Bucket": {
+      "Type": "String",
+      "Description": "S3 bucket containing Lambda code.",
+      "Default": "ts-demo-lamba-deploys"
+    },
+    "AppS3Key": {
+      "Type": "String",
+      "Description": "S3 bucket containing Lambda code.",
+      "Default": "threatstack-to-aws-sns.zip"
+    },
+    "DeploymentStage": {
+      "Type": "String",
+      "Description": "Name of API deployment stage",
+      "Default": "prod"
+    },
+    "LambdaHandler": {
+      "Type": "String",
+      "Description": "Lambda handler function name",
+      "Default": "threatstack-to-aws-sns.application"
+    },
+    "LambdaMemorySize": {
+      "Type": "String",
+      "Description": "Lambda memory size",
+      "Default": "128"
+    },
+    "LambdaTimeout": {
+      "Type": "String",
+      "Description": "Lambda timeout",
+      "Default": "28"
+    },
+    "ThreatStackServiceIntegrationsSnsTopicName": {
+      "Description": "SNS Topic name for service integrations",
+      "Type": "String",
+      "Default": "ThreatStackServiceIntegrations"
+    },
+    "ThreatStackRestApiName": {
+      "Description": "SNS Topic name for service integrations",
+      "Type": "String",
+      "Default": "threatstack-svc-integrations"
+    }
+  },
+  "Outputs": {
+    "SnsConfirmIamManagedPolicy": {
+      "Description": "Rest API Root Resource ID.",
+      "Value": {
+        "Ref": "SnsConfirmIamManagedPolicy"
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-SnsConfirmIamManagedPolicy"
+        }
+      }
+    },
+    "SnsTopicName": {
+      "Description": "Name of integrations Topic",
+      "Value": {
+        "Fn::GetAtt": [
+          "SnsTopic",
+          "TopicName"
+        ]
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-SnsTopicName"
+        }
+      }
+    },
+    "SnsTopicArn": {
+      "Description": "ARN of integrations Topic",
+      "Value": {
+        "Ref": "SnsTopic"
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-SnsTopicArn"
+        }
+      }
+    },
+    "SnsWebHookEndpoint": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "RestApi"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".amazonaws.com/",
+            {
+              "Ref": "DeploymentStage"
+            },
+            "/",
+            {
+              "Ref": "AppName"
+            },
+            {
+              "Ref": "AppEndPoint"
+            }
+          ]
+        ]
+      }
+    },
+    "RestApiId": {
+      "Description": "Rest API ID.",
+      "Value": {
+        "Ref": "RestApi"
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-RestApiId"
+        }
+      }
+    },
+    "RootResourceId": {
+      "Description": "Rest API Root Resource ID.",
+      "Value": {
+        "Fn::GetAtt": [
+          "RestApi",
+          "RootResourceId"
+        ]
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-RootResourceId"
+        }
+      }
+    }
+  },
+  "Metadata": {
+    "AWS::CloudFormation::Designer": {
+      "4368da5f-f23e-4f12-a349-5d3df71c7b6d": {
+        "size": {
+          "width": 280,
+          "height": 420
+        },
+        "position": {
+          "x": -650,
+          "y": -90
+        },
+        "z": 1,
+        "embeds": [
+          "576f2766-0467-48b4-99be-b3bbfbb7e177",
+          "8d24687a-d967-4592-8119-129aa60439f7",
+          "d84bf100-4b1d-4ce6-9d53-62e6ba2fbbbf"
+        ]
+      },
+      "576f2766-0467-48b4-99be-b3bbfbb7e177": {
+        "size": {
+          "width": 150,
+          "height": 150
+        },
+        "position": {
+          "x": -580,
+          "y": -50
+        },
+        "z": 0,
+        "parent": "4368da5f-f23e-4f12-a349-5d3df71c7b6d",
+        "embeds": [],
+        "isassociatedwith": [
+          "4368da5f-f23e-4f12-a349-5d3df71c7b6d"
+        ]
+      },
+      "8d24687a-d967-4592-8119-129aa60439f7": {
+        "size": {
+          "width": 150,
+          "height": 150
+        },
+        "position": {
+          "x": -580,
+          "y": 160
+        },
+        "z": 0,
+        "parent": "4368da5f-f23e-4f12-a349-5d3df71c7b6d",
+        "embeds": [],
+        "isassociatedwith": [
+          "576f2766-0467-48b4-99be-b3bbfbb7e177"
+        ]
+      },
+      "0317bf14-5346-46c7-b919-a5fd33590889": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": -120,
+          "y": 410
+        },
+        "z": 1,
+        "embeds": []
+      },
+      "ab8bf682-8990-4e79-b51d-d86e4cd8c710": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 20,
+          "y": 410
+        },
+        "z": 1,
+        "embeds": [],
+        "isrelatedto": [
+          "0317bf14-5346-46c7-b919-a5fd33590889"
+        ]
+      },
+      "d2334711-6f09-4e7d-b6bd-1c1820e89ff4": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 20,
+          "y": 200
+        },
+        "z": 1,
+        "embeds": [],
+        "isassociatedwith": [
+          "ab8bf682-8990-4e79-b51d-d86e4cd8c710"
+        ]
+      },
+      "293804a3-70b0-40fa-8d83-299e6432a7bc": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": -250,
+          "y": 200
+        },
+        "z": 1,
+        "embeds": [],
+        "isrelatedto": [
+          "0317bf14-5346-46c7-b919-a5fd33590889",
+          "d2334711-6f09-4e7d-b6bd-1c1820e89ff4"
+        ]
+      },
+      "32857435-a44d-4602-a6ca-5f18a0b547bd": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": -250,
+          "y": 40
+        },
+        "z": 1,
+        "embeds": [],
+        "isassociatedwith": [
+          "293804a3-70b0-40fa-8d83-299e6432a7bc"
+        ]
+      },
+      "d84bf100-4b1d-4ce6-9d53-62e6ba2fbbbf": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": -540,
+          "y": 210
+        },
+        "z": 2,
+        "parent": "4368da5f-f23e-4f12-a349-5d3df71c7b6d",
+        "embeds": [],
+        "dependson": [
+          "293804a3-70b0-40fa-8d83-299e6432a7bc"
+        ]
+      },
+      "701f3b5c-a6c2-49fa-b527-78be7ae4e50d": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": -840,
+          "y": 80
+        },
+        "z": 1,
+        "embeds": [],
+        "isassociatedwith": [
+          "4368da5f-f23e-4f12-a349-5d3df71c7b6d"
+        ],
+        "dependson": [
+          "d84bf100-4b1d-4ce6-9d53-62e6ba2fbbbf"
+        ]
+      },
+      "683b3f20-3945-46dc-8e96-af3ad3a2bb13": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 20,
+          "y": 40
+        },
+        "z": 1,
+        "embeds": [],
+        "isassociatedwith": [
+          "d2334711-6f09-4e7d-b6bd-1c1820e89ff4"
+        ]
+      },
+      "918184b7-ef10-47ee-8bec-6ebb3e54c9a8": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": -120,
+          "y": 290
+        },
+        "z": 1,
+        "embeds": [],
+        "isassociatedwith": [
+          "0317bf14-5346-46c7-b919-a5fd33590889"
+        ],
+        "dependson": [
+          "0317bf14-5346-46c7-b919-a5fd33590889"
+        ]
+      }
+    }
+  }
+}

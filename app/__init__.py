@@ -1,6 +1,6 @@
 '''Assemble service.'''
 
-from flask import Flask
+from flask_lambda import FlaskLambda
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -9,7 +9,7 @@ def _initialize_blueprints(application):
     '''Register Flask blueprints'''
 
     from app.views.sns import sns
-    application.register_blueprint(sns, url_prefix='/api/v1/sns')
+    application.register_blueprint(sns, url_prefix='/threatstack-to-aws-sns/api/v1/sns')
 
 def _initialize_errorhandlers(application):
     '''Initialize error handlers'''
@@ -21,7 +21,7 @@ def create_app():
     '''Create an app by initializing components.'''
 
     _logger.info('Initializing application')
-    application = Flask(__name__)
+    application = FlaskLambda(__name__)
 
     _initialize_errorhandlers(application)
     _initialize_blueprints(application)
