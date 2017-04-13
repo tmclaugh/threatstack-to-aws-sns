@@ -1,5 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Threat Stack service integrations",
   "Resources": {
     "SnsTopic": {
       "Type": "AWS::SNS::Topic",
@@ -403,7 +404,7 @@
     "AppS3Bucket": {
       "Type": "String",
       "Description": "S3 bucket containing Lambda code.",
-      "Default": "straycat-dhs-org-straycat-lamba-deploys"
+      "Default": "ts-demo-lamba-deploys"
     },
     "AppS3Key": {
       "Type": "String",
@@ -417,17 +418,17 @@
     },
     "LambdaHandler": {
       "Type": "String",
-      "Description": "",
+      "Description": "Lambda handler function name",
       "Default": "threatstack-to-aws-sns.application"
     },
     "LambdaMemorySize": {
       "Type": "String",
-      "Description": "",
+      "Description": "Lambda memory size",
       "Default": "128"
     },
     "LambdaTimeout": {
       "Type": "String",
-      "Description": "",
+      "Description": "Lambda timeout",
       "Default": "28"
     },
     "ThreatStackServiceIntegrationsSnsTopicName": {
