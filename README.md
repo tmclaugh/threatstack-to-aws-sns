@@ -19,7 +19,7 @@ The CloudFormation template for this service will setup the following:
 
 The entire stack looks as follows:
 
-[![CloudFormation template diagram](https://raw.githubusercontent.com/threatstack/threatstack-to-aws-sns/master/cloudformation-diagram.png)]
+![CloudFormation template diagram](https://github.com/threatstack/threatstack-to-aws-sns/blob/readme-updates/cloudformation-diagram.png?raw=true)
 
 ## API
 ### POST https://_host_/api/v1/sns/message
