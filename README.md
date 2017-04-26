@@ -1,5 +1,8 @@
 # threatstack-to-aws-sns
-Takes a Threat Stack web hook request publishes it to an AWS SNS topic.
+Takes a Threat Stack web hook request and publishes it to an AWS SNS topic.
+
+Additional Threat Stack integration services are designed to be subscribers to the AWS SNS topic created by this service.  This allows for sending alerts from Threat Stack to multiple destinations.  Please see the additional integrations services currently available on GitHub:
+* https://github.com/threatstack?q=threatstack-to
 
 **NOTE: This code is provided as an example and without support for creating services that use Threat Stack webhooks to perform actions within an environment.**
 
@@ -8,7 +11,15 @@ This service can be deployed to AWS running on Lambda behind AWS API gateway by 
 [![Launch CloudFormation
 Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=ThreatStackServiceIntegrations&templateURL=https://s3.amazonaws.com/ts-demo-lamba-deploys/threatstack-to-aws-sns.json)
 
-Once deployment is complete, get the value of the SnsWebHookEndpoint output from the CloudFormation stack.  That endpoint should be will be the Webhook URL value for the Threat Stack Webhook API integration.
+The CloudFormation template for this service will setup the following:
+* AWS API Gateway for all integration services
+* AWS Lambda function
+* AWS SNS Topic webhook messages will be published to
+* AWS IAM role to manage Lambda function permissions
+
+The entire stack looks as follows:
+
+![CloudFormation template diagram](https://github.com/threatstack/threatstack-to-aws-sns/blob/readme-updates/cloudformation-diagram.png?raw=true)
 
 ## API
 ### POST https://_host_/api/v1/sns/message
