@@ -1,4 +1,4 @@
-# threatstack-to-aws-sns
+# threatstack-to-aws-sns [![Build Status](https://travis-ci.org/threatstack/threatstack-to-aws-sns.svg?branch=master)](https://travis-ci.org/threatstack/threatstack-to-aws-sns)
 Takes a Threat Stack web hook request and publishes it to an AWS SNS topic.
 
 Additional Threat Stack integration services are designed to be subscribers to the AWS SNS topic created by this service.  This allows for sending alerts from Threat Stack to multiple destinations.  Please see the additional integrations services currently available on GitHub:
