@@ -18,7 +18,6 @@ deploy:
     secure: gLE/FPaNw09GEQsgwCDk+4g/Di1gd09UkTU7sXfHvGM2cFDfyvUHCxJU2bZLETCCmFRq1X1upLSydNFw1XuYPu7uPaKEaxeqavo/s25Ib66+ywt+oUrg4WYRbW0nRR8scRlNvEFktMxQroR3mlq5A1+ytIqMSXn+3aJa6ThbywIR6Ccjzfl9BqBOyM7p01ljnC7WtjX1USnaPrvjPCFLgt6A3HMdv0twW54Tc7Qm50YgwiEK8ksVtG4JwxcwVFYhjyFiGJlMXy0t1HePAg6PSOPsFDEVTFS7reNhi5xeLxKXGswLA4Ho1bfHLTbw0sPBQFDvTY0qk7DyvWn1uMIbDvrX8vrQNgbvQsxOzHLJQ5m11uXI5elgzV9I1XBD5HNn853gVpcVIeZ2LMGSX8w0KUg1gUkTJOQhrNZRN1uTUtEUhsmQIDrww2fyGWozE2LgVVf2p+pJL75LbGzsGlusm81bfY6vbTDzHB2bqsdgpV15aiVp+rjSPinyLMv+I6+xGbAh/RR1Bf9q/GPgJnohnQQSG1aUcZ03TI1k6jll+Edqvh/KoSuokWDUjLzUebEFhWX4boYbpm0ioTaf7UvctSIl0ZPHbx+MI5S/yivK0DxX6pebaEi5Co8OhnYJQnSVijZFGDNPHcklyvzL5WgdznIHYmb1s8Y5djSYWgGmjys=
   bucket: ts-demo-lamba-deploys
   local-dir: dist
-  upload-dir: 'no'
   acl: public_read
   on:
     repo: threatstack/threatstack-to-aws-sns
