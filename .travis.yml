@@ -1,0 +1,24 @@
+language: python
+python:
+- '3.6'
+install: pip install -r requirements.txt -t .
+script:
+- true
+after_success:
+- mkdir dist
+- find ./ -name '*.pyc' -delete
+- zip -r dist/threatstack-to-aws-sns.zip . -x '.git/*' -x 'dist/*'
+- cp deploy/cloudformation.json dist/threatstack-to-aws-sns.json
+deploy:
+  skip_cleanup: true
+  provider: s3
+  access_key_id:
+    secure: "peDowmYc5T0O1JCKUWeg2r8gvhBLu2rl0fox6yQZCxnhg0VarpPxz1eIG+uR/c1tihAB7npDvSrcwgc9TeHl7zQ61ghTuXrWeWn6IqA8uNy7KasBNWPAzkNs79Xy65qvCUs7vhFy430yJFxNMK8xX4LmpBCaKdKRxwHV609sA0iSFbCEneDqPtHlk2LGcebTwUbuUlWg3j5Mc6FL31xBYaQKLeoyGqOGuUCDInzqb0hXOhMYJTsZDDWYv3MUTv8WaXn/oCCJ3jrcYXqIdFpavt7tFGjespj/NnLbAPdSFBLdPZFJZqKYmROJY8U2K8OyoWxT8pH11UM0CAue/dTrIVcjr9g8EgQx0Waz65/Uka48kgjllVe4q3qvVa4ErcUe9yaIx7Qs8FSl9ZA3cI6iKArXvMppaMnM/15zfkw/owkeO4EP5vDqLxKpeou7mXwV+/gpRiPwsJHWP9aMG/mx2SDtj8MEjHwJ5VLiB7QORcb0XMvlyk4EEsjOFFiOjex25nGqWB43F1BIFo4SGyXvQFyCPYzp96rpSH3vCqIT+YvlCe1TSAiaAtyjzTUsBzeEKn+4DxcoD+VgWK03YvWK7mN6iKHHKKulVW/60prIsPUJwdKikuuaFwDsa8aSEJePEqofdyIZCa4IvcX0MnE2bbMqG/8T+EWFmExQWkAtp7E="
+  secret_access_key:
+    secure: "dWeSdYUt85kCOCwMEWYN9/wzgkDl4KTeuCse7tOiZeb5UWQQcKVrZU560oEBX8IqXCDI8UH/x5GKncuBbvSIzNku6WRUbNdCV+6Go6QPNZV0Z3jEyclFnC12gvw/akvIXDd7DB4HKJ/V1iAZ12XAeB9GK44HyKs+3LSSOpezorsDCrX2z5b/aYydTJKWbjnsCircjwYfNzfxFGFu61IFnjUCpaE8ro/kVBOLbkWh0q1HjeHoodCHTH04ovlCMHUGK0hVrGHI05ob4jYzs0GXqNhwjuqWQ9YsbgC49r7zW7SOXaGMaxAF9cvlP9Mhpa0a6Xob/K3n5EQlBkTMeiDRW/FE5Kq6USDKv6Q6F3NHkVplSYNTTaT+jKx+pSTOP9kXWICxgNE3r8kKIdkJidTy4WGHe2wxUQMvYA5x+yZ+Nu40SCRjSF5NeXhZOf8UQUk1Jh8cZXRo4SbMlCP+WN1CM7xVcnFUdH39u5F92myzjFTPkFq7HqITSMEgr73p3NSMDe1QoaWriNrRhf3Qf4vE6FnQ20j+c4CkpFeUcy8IpLd3yBNCvodOGu8yuROl4/yH64xrdO4OX2LQI3rhL2mIbvR182cHNnsat6JW9q2qjKHfJeMu/+icLbc2lXp23zrIw8p/qBLNhlXaq+8G/r70iNqQ1lOEUNFGAy5hqaHg/TE="
+  bucket: ts-demo-lamba-deploys
+  local-dir: 'dist'
+  upload-dir: 'no'
+  acl: public_read
+  on:
+    repo: threatstack/threatstack-to-aws-sns
