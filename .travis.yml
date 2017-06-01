@@ -8,7 +8,9 @@ after_success:
 - mkdir dist
 - find ./ -name '*.pyc' -delete
 - zip -r dist/threatstack-to-aws-sns.zip . -x '.git/*' -x 'dist/*'
-- cp deploy/cloudformation.json dist/threatstack-to-aws-sns.json
+- cat deploy/cloudformation.json | sed "s,zzSHA256zz,$(openssl dgst -r -sha256 dist/threatstack-to-aws-sns.zip | cut -f 1 -d ' ')," > dist/threatstack-to-aws-sns.json
+- ls -al dist
+- cat dist/threatstack-to-aws-sns.json
 deploy:
   skip_cleanup: true
   provider: s3
