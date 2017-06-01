@@ -8,7 +8,7 @@ after_success:
 - mkdir dist
 - find ./ -name '*.pyc' -delete
 - zip -r dist/threatstack-to-aws-sns.zip . -x '.git/*' -x 'dist/*'
-- cat deploy/cloudformation.json | sed "s,\"LambdaVersion\":,LambdaVersion$(date +%Y%m%d%H%M)," > dist/threatstack-to-aws-sns.json
+- cat deploy/cloudformation.json | sed "s,\"LambdaVersion\":,\"LambdaVersion$(date +%Y%m%d%H%M)\":," > dist/threatstack-to-aws-sns.json
 - ls -al dist
 - cat dist/threatstack-to-aws-sns.json
 deploy:
