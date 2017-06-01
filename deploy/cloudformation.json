@@ -359,7 +359,7 @@
         }
       }
     },
-    "LambdaVersion-zzSHA256zz": {
+    "LambdaVersion": {
       "Type": "AWS::Lambda::Version",
       "Properties": {
         "FunctionName": {
