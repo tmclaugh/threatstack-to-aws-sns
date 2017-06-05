@@ -17,9 +17,9 @@ def handler(event, context):
     Update a lambda function.
     '''
 
-    function_name = os.env.get('FUNCTION_NAME') or event.get('FunctionName')
-    function_s3_bucket = os.env.get('FUNCTION_S3_BUCKET') or event.get('FunctionS3Bucket')
-    function_s3_key = os.env.get('FUNCTION_S3_KEY') or event.get('FunctionS3Key')
+    function_name = os.environ.get('FUNCTION_NAME') or event.get('FunctionName')
+    function_s3_bucket = os.environ.get('FUNCTION_S3_BUCKET') or event.get('FunctionS3Bucket')
+    function_s3_key = os.environ.get('FUNCTION_S3_KEY') or event.get('FunctionS3Key')
 
     _logger.info(event)
 
