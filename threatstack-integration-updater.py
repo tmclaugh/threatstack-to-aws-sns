@@ -33,4 +33,5 @@ def handler(event, context):
 
     _logger.info(json.dumps(resp))
 
-    exit(0)
+    return
+
