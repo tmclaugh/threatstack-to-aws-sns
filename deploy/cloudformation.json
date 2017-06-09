@@ -485,7 +485,7 @@
         "Handler": {
           "Ref": "UpdaterLambdaHandler"
         },
-        "MemorySize":128,
+        "MemorySize":512,
         "Role": {
           "Fn::GetAtt": [
             "UpdaterLambdaIamRole",
