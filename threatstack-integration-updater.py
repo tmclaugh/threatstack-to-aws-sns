@@ -42,11 +42,10 @@ def update_lambda(event, context):
     '''
     Update a lambda function.
     '''
-
-    function_name = os.environ.get('FUNCTION_NAME') or event.get('FunctionName')
-    function_zip_file_url = os.environ.get('FUNCTION_ZIP_FILE_URL') or event.get('FunctionZipFileUrl')
-    function_s3_bucket = os.environ.get('FUNCTION_S3_BUCKET') or event.get('FunctionS3Bucket')
-    function_s3_key = os.environ.get('FUNCTION_S3_KEY') or event.get('FunctionS3Key')
+    function_name = event.get('FunctionName')
+    function_zip_file_url = event.get('FunctionZipFileUrl')
+    function_s3_bucket = event.get('FunctionS3Bucket')
+    function_s3_key = event.get('FunctionS3Key')
 
     _logger.info(json.dumps(event))
 
@@ -77,3 +76,14 @@ def update_lambda(event, context):
 
     return resp
 
+if __name__ == '__main__':
+    '''
+    Make this runable locally via command line.
+    '''
+    event = {}
+    event['FunctionName'] = os.environ.get('FUNCTION_NAME')
+    event['FunctionZipFileUrl'] = os.environ.get('FUNCTION_ZIP_FILE_URL')
+    event['FunctionS3Bucket'] = os.environ.get('FUNCTION_S3_BUCKET')
+    event['FunctionS3Key'] = os.environ.get('FUNCTION_S3_KEY')
+
+    update_lambda({}, None)
