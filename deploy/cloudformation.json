@@ -445,6 +445,18 @@
                   "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${UpdaterAppName}:*"
                 }
               ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": "lambda:UpdateFunctionCode",
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:threatstack-to-*"
+                },
+                {
+                  "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${UpdaterAppName}"
+                }
+              ]
             }
           ]
         }
@@ -486,6 +498,34 @@
       "Metadata": {
         "AWS::CloudFormation::Designer": {
           "id": "2e6470e4-71ee-4510-a252-def5ca3ddd46"
+        }
+      }
+    },
+    "UpdaterLambdaInvokeUpdater": {
+      "Type": "Custom::LambdaUpdaterInvoke",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${UpdaterAppName}"
+        },
+        "FunctionName": {
+          "Ref": "UpdaterAppName"
+        },
+        "FunctionZipFileUrl": {
+          "Fn::Sub": "https://s3.amazonaws.com/${AppS3Bucket}/${AppS3Key}"
+        }
+      }
+    },
+    "LambdaInvokeUpdater": {
+      "Type": "Custom::LambdaUpdaterInvoke",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${UpdaterAppName}"
+        },
+        "FunctionName": {
+          "Ref": "AppName"
+        },
+        "FunctionZipFileUrl": {
+          "Fn::Sub": "https://s3.amazonaws.com/${AppS3Bucket}/${AppS3Key}"
         }
       }
     }
@@ -639,6 +679,17 @@
       "Export": {
         "Name": {
           "Fn::Sub": "${AWS::StackName}-RootResourceId"
+        }
+      }
+    },
+    "UpdaterLambdaArn": {
+      "Description": "Updater Lambda Function ARN.",
+      "Value": {
+        "Fn::GetAtt": ["UpdaterLambdaFunction", "Arn"]
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-UpdaterLambdaArn"
         }
       }
     }
