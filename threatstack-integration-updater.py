@@ -42,10 +42,11 @@ def update_lambda(event, context):
     '''
     Update a lambda function.
     '''
-    function_name = event.get('FunctionName')
-    function_zip_file_url = event.get('FunctionZipFileUrl')
-    function_s3_bucket = event.get('FunctionS3Bucket')
-    function_s3_key = event.get('FunctionS3Key')
+    properties = event.get('ResourceProperties')
+    function_name = properties.get('FunctionName')
+    function_zip_file_url = properties.get('FunctionZipFileUrl')
+    function_s3_bucket = properties.get('FunctionS3Bucket')
+    function_s3_key = properties.get('FunctionS3Key')
 
     _logger.info(json.dumps(event))
 
@@ -80,10 +81,12 @@ if __name__ == '__main__':
     '''
     Make this runable locally via command line.
     '''
-    event = {}
-    event['FunctionName'] = os.environ.get('FUNCTION_NAME')
-    event['FunctionZipFileUrl'] = os.environ.get('FUNCTION_ZIP_FILE_URL')
-    event['FunctionS3Bucket'] = os.environ.get('FUNCTION_S3_BUCKET')
-    event['FunctionS3Key'] = os.environ.get('FUNCTION_S3_KEY')
+    event = {
+        'ResourceProperties': {}
+    }
+    event['ResourceProperties']['FunctionName'] = os.environ.get('FUNCTION_NAME')
+    event['ResourceProperties']['FunctionZipFileUrl'] = os.environ.get('FUNCTION_ZIP_FILE_URL')
+    event['ResourceProperties']['FunctionS3Bucket'] = os.environ.get('FUNCTION_S3_BUCKET')
+    event['ResourceProperties']['FunctionS3Key'] = os.environ.get('FUNCTION_S3_KEY')
 
     update_lambda({}, None)
