@@ -1,4 +1,5 @@
 boto3
+cfn_resource
 Flask
 flask-lambda
 gevent
