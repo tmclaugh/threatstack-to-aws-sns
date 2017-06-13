@@ -71,11 +71,16 @@ def update_lambda(event, context):
         kwargs.update(additional_args)
 
     lambda_client = boto3.client('lambda')
-    resp = lambda_client.update_function_code(**kwargs)
+    lambda_update_resp = lambda_client.update_function_code(**kwargs)
 
-    _logger.info(json.dumps(resp))
+    cfn_resp = {
+        'Status': 'SUCCESS',
+        'Data': lambda_update_resp,
+        'PhysicalResourceId': lambda_update_resp.get('FunctionArn')
+    }
+    _logger.info(json.dumps(cfn_resp))
 
-    return resp
+    return cfn_resp
 
 if __name__ == '__main__':
     '''
