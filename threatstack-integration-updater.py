@@ -71,5 +71,5 @@ def handler(event, context):
 
     _logger.info(json.dumps(resp))
 
-    return
+    return resp
 
