@@ -1,5 +1,6 @@
 #!env python
 import boto3
+import cfn_resource
 import io
 import json
 import logging
@@ -20,6 +21,8 @@ if os.environ.get('TS_DEBUG'):
     logging.root.setLevel(level=logging.DEBUG)
 _logger = logging.getLogger(__name__)
 
+handler = cfn_resource.Resource()
+
 def _fetch_zip_file(url):
     '''
     Fetch a file from a URL and return a file-like object.
@@ -34,7 +37,8 @@ def _fetch_zip_file(url):
 
     return zip_file
 
-def handler(event, context):
+@handler.create
+def update_lambda(event, context):
     '''
     Update a lambda function.
     '''
