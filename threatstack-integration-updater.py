@@ -12,7 +12,7 @@ import zipfile
 try:
     from urllib.request import urlopen
 except:
-    from urllib import urlopen
+    from urllib2 import urlopen
 
 dirname = os.path.dirname(__file__)
 logging_conf = os.path.join(dirname, 'logging.conf')
