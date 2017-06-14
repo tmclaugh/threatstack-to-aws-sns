@@ -52,7 +52,7 @@ def update_lambda(event, context):
 
     # S3{Bucket,Key} require S3 permissions/IAM policy for access. If using a
     # URL then we must fetch and get bytes.
-    kwargs = {
+    lambda_update_kwargs = {
         'FunctionName': function_name,
         'Publish': True
     }
@@ -62,16 +62,16 @@ def update_lambda(event, context):
         additional_args = {
             'ZipFile': function_zip_file_bytes.read()
         }
-        kwargs.update(additional_args)
+        lambda_update_kwargs.update(additional_args)
     else:
         additional_args = {
             'S3Bucket': function_s3_bucket,
             'S3Key': function_s3_key,
         }
-        kwargs.update(additional_args)
+        lambda_update_kwargs.update(additional_args)
 
     lambda_client = boto3.client('lambda')
-    lambda_update_resp = lambda_client.update_function_code(**kwargs)
+    lambda_update_resp = lambda_client.update_function_code(**lambda_update_kwargs)
 
     cfn_resp = {
         'Status': 'SUCCESS',
