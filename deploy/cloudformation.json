@@ -528,6 +528,30 @@
           "Fn::Sub": "https://s3.amazonaws.com/${AppS3Bucket}/${AppS3Key}"
         }
       }
+    },
+    "UpdaterLambdaVersion": {
+      "Type": "AWS::Lambda::Version",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "UpdaterLambdaFunction"
+        },
+        "CodeSha256": "%%SHA256%%"
+      },
+      "DependsOn": [
+        "UpdaterLambdaInvokeUpdater"
+      ]
+    },
+    "LambdaVersion": {
+      "Type": "AWS::Lambda::Version",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "LambdaFunction"
+        },
+        "CodeSha256": "%%SHA256%%"
+      },
+      "DependsOn": [
+        "LambdaInvokeUpdater"
+      ]
     }
   },
   "Parameters": {
@@ -593,6 +617,10 @@
     }
   },
   "Outputs": {
+    "LambdaVersionSha256": {
+      "Description": "Sha256 of deployed code.",
+      "Value": "%%SHA256%%"
+    },
     "SnsConfirmIamManagedPolicy": {
       "Description": "Rest API Root Resource ID.",
       "Value": {
