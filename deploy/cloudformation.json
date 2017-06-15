@@ -512,7 +512,8 @@
         },
         "FunctionZipFileUrl": {
           "Fn::Sub": "https://s3.amazonaws.com/${AppS3Bucket}/${AppS3Key}"
-        }
+        },
+        "TravisBuildNumber": "%%TRAVIS_BUILD_NUMBER%%"
       }
     },
     "LambdaInvokeUpdater": {
@@ -526,7 +527,8 @@
         },
         "FunctionZipFileUrl": {
           "Fn::Sub": "https://s3.amazonaws.com/${AppS3Bucket}/${AppS3Key}"
-        }
+        },
+        "TravisBuildNumber": "%%TRAVIS_BUILD_NUMBER%%"
       }
     },
     "UpdaterLambdaVersion": {
