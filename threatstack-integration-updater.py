@@ -37,7 +37,7 @@ def _fetch_zip_file(url):
 
     return zip_file
 
-@handler.create
+@handler.update
 def update_lambda(event, context):
     '''
     Update a lambda function.
