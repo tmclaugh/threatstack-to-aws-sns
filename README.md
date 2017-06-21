@@ -9,7 +9,7 @@ Additional Threat Stack integration services are designed to be subscribers to t
 ## Deployment
 This service can be deployed to AWS running on Lambda behind AWS API gateway by clicking "Launch Stack".
 [![Launch CloudFormation
-Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=ThreatStackServiceIntegrations&templateURL=https://s3.amazonaws.com/ts-demo-lamba-deploys/threatstack-to-aws-sns.json)
+Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=ThreatStackServiceIntegrations&templateURL=https://s3.amazonaws.com/ts-demo-lambda-deploys/threatstack-to-aws-sns.json)
 
 The CloudFormation template for this service will setup the following:
 * AWS API Gateway for all integration services

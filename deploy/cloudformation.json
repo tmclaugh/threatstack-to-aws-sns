@@ -504,7 +504,7 @@
     "AppS3Bucket": {
       "Type": "String",
       "Description": "S3 bucket containing Lambda code.",
-      "Default": "ts-demo-lamba-deploys"
+      "Default": "ts-demo-lambda-deploys"
     },
     "AppS3Key": {
       "Type": "String",
