@@ -348,7 +348,7 @@
             "Arn"
           ]
         },
-        "Runtime": "python2.7",
+        "Runtime": "python3.6",
         "Timeout": {
           "Ref": "LambdaTimeout"
         }
@@ -480,7 +480,7 @@
             "Arn"
           ]
         },
-        "Runtime": "python2.7",
+        "Runtime": "python3.6",
         "Timeout":60
       },
       "Metadata": {
