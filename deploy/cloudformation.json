@@ -530,30 +530,6 @@
         },
         "TravisBuildNumber": "%%TRAVIS_BUILD_NUMBER%%"
       }
-    },
-    "UpdaterLambdaVersion": {
-      "Type": "AWS::Lambda::Version",
-      "Properties": {
-        "FunctionName": {
-          "Ref": "UpdaterLambdaFunction"
-        },
-        "CodeSha256": "%%SHA256%%"
-      },
-      "DependsOn": [
-        "UpdaterLambdaInvokeUpdater"
-      ]
-    },
-    "LambdaVersion": {
-      "Type": "AWS::Lambda::Version",
-      "Properties": {
-        "FunctionName": {
-          "Ref": "LambdaFunction"
-        },
-        "CodeSha256": "%%SHA256%%"
-      },
-      "DependsOn": [
-        "LambdaInvokeUpdater"
-      ]
     }
   },
   "Parameters": {
@@ -722,6 +698,10 @@
           "Fn::Sub": "${AWS::StackName}-UpdaterLambdaArn"
         }
       }
+    },
+    "TravisBuildNumber": {
+      "Description": "Travis build number.",
+      "Value": "%%TRAVIS_BUILD_NUMBER%%"
     }
   },
   "Metadata": {
