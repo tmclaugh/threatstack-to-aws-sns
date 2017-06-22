@@ -9,17 +9,20 @@ after_success:
 - find ./ -name '*.pyc' -delete
 - zip -r dist/threatstack-to-aws-sns.zip . -x '.git/*' -x 'dist/*'
 - cp deploy/cloudformation.json dist/threatstack-to-aws-sns.json
+- sed -i.bak "s,%%SHA256%%,$(openssl dgst -binary -sha256 dist/threatstack-to-aws-sns.zip | openssl base64)," dist/threatstack-to-aws-sns.json
+- sed -i.bak "s,%%TRAVIS_BUILD_NUMBER%%,$TRAVIS_BUILD_NUMBER," dist/threatstack-to-aws-sns.json
+- rm dist/*.bak
 - ls -al dist
 - cat dist/threatstack-to-aws-sns.json
 deploy:
   skip_cleanup: true
   provider: s3
   access_key_id:
-    secure: unMz+XII7f3dRuTcZxbxRvwXZnT+0XKoJQ+lCu2BILFFd+qyqYarZBaSAr1jMxRN1bprzA/QhgQwzPK4UkFFDetqUPkO2VyizuBgedo7cAf3Qym8OyOc9LzaxxuTu+IkHt5dYUBID4GM5VDk4+4LTp6DBq7+9hvB6gxMPysio/WUCwvYJsnKhBmAfjv7OxF7r0njnzH+xyDvzanY96b+XlxIK5oqI6kucQtgXJ3o0Yfj2KCVFo5whH8qaiMMz+ouKPBpEn9mbO3IsO23AHIa5iR/uPOLJPryGlBg11LMHQZ4UuWzo7FQe6r/Yg4+QOz7I5RLQTK2Vb+4y8zBXAkclFckPVlsWsY8+85a2kawJJL4zDWjUb4QC2srCrt9D6JmNOsc3xS/NEBVuefKxUBceiw7LSKX/o1Nn6jfYyLR+83FclQjqZymFw90eESE+Z7lBIqBvLRUnTrwh/o1B19giL3ZCrH6112il3Hcw2pX5ozifu7EbdJcZIBNUghNSertglkCHeaROvI0HP/pchot816oxPjZBJ+OGaAP42KcVMUylmUqN1MtZQw+rbZ+wPoZhR56ttqiFnZ/Wh4PQhVBLzP4gcJanBpo4g1Y10qomkvPyG3lEi4jtpq4719Un8/phLTJagzeY+yUipihdreO1RL7q+MN+XAc18QYxNq7534=
+    secure: "ooyDo5BFY6wA/230JdlQlRJi3XeAxmJYhajfdOodxpv87tsEx2fFqL0p/QEGllvSRPKJqeYi6/lfrdxpFYgOOiN/ivsPOQZpBBoPUJoxEy5PC3oXJMRIgSQWF6J7FFPsq0NtdzsaKPZHrj1yBU/PSwrHzbTCwG0CqdPA82zOuZuvs92kNC3CZGJasQ8z09vZsZF4oFubVL9+OpPkMjGSv+HuajjgBlSk8pUrn7UH9snqFcqtEqLYvO8OnL7SP0yXim6xceOcUl7Tf4O0szu5djT+2aJytI4915U2EciYKn9M+MNmStSL1PMov1aE940ZUDXFf3rzxoWkP5aAQ3oPcVe6OPRP6EKgKGnYSMIlZnTbX51HTKpFgU9liQnt3k9CVJVmKQfL7k0iXNwlgdf4zgAPgJb5Ot6febi0f9P3+2U/Y82EvqCMOWYwk9CLc8BpYHg99Wwx11b6p8ekTvg0NVSoI0CsJrtoFQzzIIIJYxTQL0h3Rb/jatyq1cREqx8fXRJv3kF38fdM8CHjNVxaDMys2EzrowkvnGHoBTIo/V5XuwOSrph5/3N/Hya63vEv/Tn8fo71iJUlI7yd7O5Apax0uw4SlF1095gd87uhn+EcX426pRLlKe81EbbRMaUbS/X+HVsJoChwKCE2qnRKVvBYmmYg9ox+XZICkYHtm4s="
   secret_access_key:
-    secure: gLE/FPaNw09GEQsgwCDk+4g/Di1gd09UkTU7sXfHvGM2cFDfyvUHCxJU2bZLETCCmFRq1X1upLSydNFw1XuYPu7uPaKEaxeqavo/s25Ib66+ywt+oUrg4WYRbW0nRR8scRlNvEFktMxQroR3mlq5A1+ytIqMSXn+3aJa6ThbywIR6Ccjzfl9BqBOyM7p01ljnC7WtjX1USnaPrvjPCFLgt6A3HMdv0twW54Tc7Qm50YgwiEK8ksVtG4JwxcwVFYhjyFiGJlMXy0t1HePAg6PSOPsFDEVTFS7reNhi5xeLxKXGswLA4Ho1bfHLTbw0sPBQFDvTY0qk7DyvWn1uMIbDvrX8vrQNgbvQsxOzHLJQ5m11uXI5elgzV9I1XBD5HNn853gVpcVIeZ2LMGSX8w0KUg1gUkTJOQhrNZRN1uTUtEUhsmQIDrww2fyGWozE2LgVVf2p+pJL75LbGzsGlusm81bfY6vbTDzHB2bqsdgpV15aiVp+rjSPinyLMv+I6+xGbAh/RR1Bf9q/GPgJnohnQQSG1aUcZ03TI1k6jll+Edqvh/KoSuokWDUjLzUebEFhWX4boYbpm0ioTaf7UvctSIl0ZPHbx+MI5S/yivK0DxX6pebaEi5Co8OhnYJQnSVijZFGDNPHcklyvzL5WgdznIHYmb1s8Y5djSYWgGmjys=
-  bucket: ts-demo-lamba-deploys
+    secure: "WQDqDyoQZr3xoPeGQHrkViMTxaoZZS70HHIO5KG08RfKFUU2FjIC/H2PJcraR0qBlHGmb+Q7KPYdUz3hq0T82x9js2GGNRagVQ52XBJFoV9fZypwkJj3TaL+65pfA0xmDHzHovqwFzEVoktpD3Dl2Rg0TSfD9bxLdXENb0EZCCVZ/grlkawkJ145yJ1cl6qlOSA7VTR1jEa3tJwt43NMSYkM0dMkoE3XaJ3bpcxOUH21GrHh0fbOj3CGL3kZWRuCCXMOIVWdbYE2ME+0aDUJb5Zi/NaZfhQRhV8tDe3NJVebPsX9NtemFOF1eODHSDBey7p5XjFEkRX4zU7iV/yiNzaFS5taMIv34YvCBxhOHE6Uhv+yv+sTYCf4zU5773EA/hyMVJg1onJlhoqy9rPKjkIHU70MxSrW0mUVVmzEWrEd7FzMyt8hBv1dFAyMWv4FHhaLr6rPDK4ptfL+vYq7pSIGYqN784RYVYD/HmWq5ixTW8qXUpfr9BT1Se/9YUCgiiYtJsmXQkEzCTv0XaCY/xgxlWarAec/+6NbJ20gY6Hp/H5qbLtFreZ2wt2Ffz278I5v9Hv8PbCTivwslA/OaVK7ln87BnXeRzAlukAux9NOVh3R5tp8yT162zcFyH6zEtxpzYgZ2UqDdLURA7YgEQ2o0OJjj0kEKHbfieW47w8="
+  bucket: straycat-dhs-org-straycat-lambda-deploys
   local-dir: dist
   acl: public_read
   on:
-    repo: threatstack/threatstack-to-aws-sns
+    repo: tmclaugh/threatstack-to-aws-sns

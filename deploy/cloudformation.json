@@ -348,7 +348,7 @@
             "Arn"
           ]
         },
-        "Runtime": "python2.7",
+        "Runtime": "python3.6",
         "Timeout": {
           "Ref": "LambdaTimeout"
         }
@@ -445,6 +445,18 @@
                   "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${UpdaterAppName}:*"
                 }
               ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": "lambda:UpdateFunctionCode",
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:threatstack-to-*"
+                },
+                {
+                  "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${UpdaterAppName}"
+                }
+              ]
             }
           ]
         }
@@ -473,20 +485,50 @@
         "Handler": {
           "Ref": "UpdaterLambdaHandler"
         },
-        "MemorySize":128,
+        "MemorySize":512,
         "Role": {
           "Fn::GetAtt": [
             "UpdaterLambdaIamRole",
             "Arn"
           ]
         },
-        "Runtime": "python2.7",
+        "Runtime": "python3.6",
         "Timeout":60
       },
       "Metadata": {
         "AWS::CloudFormation::Designer": {
           "id": "2e6470e4-71ee-4510-a252-def5ca3ddd46"
         }
+      }
+    },
+    "UpdaterLambdaInvokeUpdater": {
+      "Type": "Custom::LambdaUpdaterInvoke",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${UpdaterAppName}"
+        },
+        "FunctionName": {
+          "Ref": "UpdaterAppName"
+        },
+        "FunctionZipFileUrl": {
+          "Fn::Sub": "https://s3.amazonaws.com/${AppS3Bucket}/${AppS3Key}"
+        },
+        "TravisBuildNumber": "%%TRAVIS_BUILD_NUMBER%%"
+      }
+    },
+    "LambdaInvokeUpdater": {
+      "Type": "Custom::LambdaUpdaterInvoke",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${UpdaterAppName}"
+        },
+        "FunctionName": {
+          "Ref": "AppName"
+        },
+        "FunctionZipFileUrl": {
+          "Fn::Sub": "https://s3.amazonaws.com/${AppS3Bucket}/${AppS3Key}"
+        },
+        "TravisBuildNumber": "%%TRAVIS_BUILD_NUMBER%%"
       }
     }
   },
@@ -504,7 +546,7 @@
     "AppS3Bucket": {
       "Type": "String",
       "Description": "S3 bucket containing Lambda code.",
-      "Default": "ts-demo-lamba-deploys"
+      "Default": "straycat-dhs-org-straycat-lambda-deploys"
     },
     "AppS3Key": {
       "Type": "String",
@@ -553,6 +595,10 @@
     }
   },
   "Outputs": {
+    "LambdaVersionSha256": {
+      "Description": "Sha256 of deployed code.",
+      "Value": "%%SHA256%%"
+    },
     "SnsConfirmIamManagedPolicy": {
       "Description": "Rest API Root Resource ID.",
       "Value": {
@@ -641,6 +687,21 @@
           "Fn::Sub": "${AWS::StackName}-RootResourceId"
         }
       }
+    },
+    "UpdaterLambdaArn": {
+      "Description": "Updater Lambda Function ARN.",
+      "Value": {
+        "Fn::GetAtt": ["UpdaterLambdaFunction", "Arn"]
+      },
+      "Export": {
+        "Name": {
+          "Fn::Sub": "${AWS::StackName}-UpdaterLambdaArn"
+        }
+      }
+    },
+    "TravisBuildNumber": {
+      "Description": "Travis build number.",
+      "Value": "%%TRAVIS_BUILD_NUMBER%%"
     }
   },
   "Metadata": {
